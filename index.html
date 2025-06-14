@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bibliothèque Numérique</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#64748b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Nunito', sans-serif;
+}
+.search-input:focus {
+outline: none;
+box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+.custom-checkbox {
+position: relative;
+display: inline-block;
+width: 18px;
+height: 18px;
+margin-right: 8px;
+}
+.custom-checkbox input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.checkmark {
+position: absolute;
+top: 0;
+left: 0;
+height: 18px;
+width: 18px;
+background-color: #fff;
+border: 1px solid #d1d5db;
+border-radius: 4px;
+transition: all 0.2s ease;
+}
+.custom-checkbox input:checked ~ .checkmark {
+background-color: #3b82f6;
+border-color: #3b82f6;
+}
+.checkmark:after {
+content: "";
+position: absolute;
+display: none;
+}
+.custom-checkbox input:checked ~ .checkmark:after {
+display: block;
+}
+.custom-checkbox .checkmark:after {
+left: 6px;
+top: 2px;
+width: 5px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 40px;
+height: 22px;
+}
+.custom-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #e5e7eb;
+transition: .4s;
+border-radius: 22px;
+}
+.slider:before {
+position: absolute;
+content: "";
+height: 18px;
+width: 18px;
+left: 2px;
+bottom: 2px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .slider {
+background-color: #3b82f6;
+}
+input:checked + .slider:before {
+transform: translateX(18px);
+}
+.custom-range {
+-webkit-appearance: none;
+width: 100%;
+height: 6px;
+border-radius: 5px;
+background: #e5e7eb;
+outline: none;
+}
+.custom-range::-webkit-slider-thumb {
+-webkit-appearance: none;
+appearance: none;
+width: 18px;
+height: 18px;
+border-radius: 50%;
+background: #3b82f6;
+cursor: pointer;
+}
+.custom-range::-moz-range-thumb {
+width: 18px;
+height: 18px;
+border-radius: 50%;
+background: #3b82f6;
+cursor: pointer;
+border: none;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+input[type=number] {
+-moz-appearance: textfield;
+}
+.hero-section {
+background-image: url('https://readdy.ai/api/search-image?query=modern%20library%20interior%20with%20bookshelves%2C%20digital%20screens%2C%20comfortable%20reading%20areas%2C%20soft%20lighting%2C%20people%20reading%20and%20using%20digital%20devices%2C%20clean%20and%20minimalist%20design%2C%20blue%20accents%2C%20high%20ceiling%2C%20natural%20light%20from%20large%20windows&width=1600&height=600&seq=1&orientation=landscape');
+background-size: cover;
+background-position: center;
+}
+.collection-card:hover .collection-overlay {
+opacity: 1;
+}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<!-- Header -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+<div class="container mx-auto px-4 py-3 flex items-center justify-between">
+<div class="flex items-center">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary mr-8">hayar library</a>
+<nav class="hidden md:flex space-x-6">
+<a href="#" id="homeLink" class="text-gray-900 font-medium hover:text-primary transition active:scale-95" aria-current="page">Accueil</a>
+<a href="Collections-de-la-Bibliothèque.html" data-readdy="true" class="text-gray-600 hover:text-primary transition">Collections</a>
+<!--a href="#" class="text-gray-600 hover:text-primary transition">Mon Espace</a>
+<a href="#" class="text-gray-600 hover:text-primary transition">À propos</a-->
+</nav>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative hidden md:block">
+<div class="w-10 h-10 flex items-center justify-center absolute left-0 top-0 text-gray-500">
+<i class="ri-search-line ri-lg"></i>
+</div>
+<input type="text" placeholder="Recherche rapide..." class="search-input pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm w-64 border-none focus:bg-white transition-all duration-200">
+</div>
+<div class="flex items-center space-x-2">
+<button class="bg-white text-primary border border-primary px-4 py-2 rounded-button hover:bg-gray-50 transition whitespace-nowrap">
+Se connecter
+</button>
+<button class="bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+S'inscrire
+</button>
+</div>
+<button class="md:hidden w-10 h-10 flex items-center justify-center text-gray-700">
+<i class="ri-menu-line ri-2x"></i>
+</button>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="hero-section relative">
+<div class="absolute inset-0 bg-black bg-opacity-40"></div>
+<div class="container mx-auto px-4 py-20 relative z-10">
+<div class="max-w-3xl mx-auto text-center">
+<h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Votre Bibliothèque Numérique Personnelle</h1>
+<p class="text-xl text-white mb-8">Découvrez, lisez et organisez vos collections numériques en toute simplicité</p>
+<div class="bg-white p-2 rounded-lg shadow-lg">
+<div class="flex">
+<div class="relative flex-grow">
+<div class="w-10 h-10 flex items-center justify-center absolute left-0 top-0 text-gray-500">
+<i class="ri-search-line ri-lg"></i>
+</div>
+<input type="text" placeholder="Rechercher par titre, auteur, sujet..." class="search-input w-full pl-10 pr-4 py-3 border-none text-gray-800">
+</div>
+<button class="bg-primary text-white px-6 py-3 rounded-button ml-2 hover:bg-blue-600 transition whitespace-nowrap">
+Rechercher
+</button>
+</div>
+<div class="pt-3 pb-1 px-2 border-t border-gray-100 mt-2 flex flex-wrap items-center text-sm text-gray-600">
+<span class="mr-3 font-medium">Filtres :</span>
+<div class="flex items-center mr-4 mb-2">
+<label class="custom-checkbox">
+<input type="checkbox">
+<span class="checkmark"></span>
+</label>
+<span>Livres</span>
+</div>
+<div class="flex items-center mr-4 mb-2">
+<label class="custom-checkbox">
+<input type="checkbox">
+<span class="checkmark"></span>
+</label>
+<span>Articles</span>
+</div>
+<div class="flex items-center mr-4 mb-2">
+<label class="custom-checkbox">
+<input type="checkbox">
+<span class="checkmark"></span>
+</label>
+<span>Magazines</span>
+</div>
+<div class="flex items-center mr-4 mb-2">
+<label class="custom-checkbox">
+<input type="checkbox">
+<span class="checkmark"></span>
+</label>
+<span>Audio</span>
+</div>
+<button class="text-primary hover:underline ml-auto mb-2">
+Recherche avancée
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Collections Mises en Avant -->
+<section class="py-12 bg-white">
+<div class="container mx-auto px-4">
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-2xl font-bold text-gray-900">Collections Populaires</h2>
+<div class="flex space-x-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50">
+<i class="ri-arrow-left-s-line ri-lg"></i>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50">
+<i class="ri-arrow-right-s-line ri-lg"></i>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md">
+<img src="https://readdy.ai/api/search-image?query=stack%20of%20literature%20books%20with%20blue%20cover%2C%20minimalist%20design%2C%20clean%20background%2C%20professional%20photography%2C%20high%20resolution&width=400&height=250&seq=2&orientation=landscape" alt="Littérature Classique" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+<div class="p-4 bg-white">
+<span class="inline-block px-2 py-1 bg-blue-100 text-primary text-xs rounded-full mb-2">Populaire</span>
+<h3 class="font-semibold text-gray-900 mb-1">Littérature Classique</h3>
+<p class="text-sm text-gray-600">125 ouvrages</p>
+</div>
+</div>
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md">
+<img src="https://readdy.ai/api/search-image?query=modern%20science%20books%20and%20digital%20tablets%2C%20clean%20minimalist%20arrangement%2C%20soft%20lighting%2C%20professional%20photography&width=400&height=250&seq=3&orientation=landscape" alt="Sciences & Technologie" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+<div class="p-4 bg-white">
+<span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full mb-2">Nouveau</span>
+<h3 class="font-semibold text-gray-900 mb-1">Sciences & Technologie</h3>
+<p class="text-sm text-gray-600">87 ouvrages</p>
+</div>
+</div>
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md">
+<img src="https://readdy.ai/api/search-image?query=art%20history%20books%20with%20beautiful%20covers%2C%20arranged%20on%20wooden%20surface%2C%20soft%20natural%20lighting%2C%20professional%20photography&width=400&height=250&seq=4&orientation=landscape" alt="Arts & Histoire" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+<div class="p-4 bg-white">
+<h3 class="font-semibold text-gray-900 mb-1">Arts & Histoire</h3>
+<p class="text-sm text-gray-600">94 ouvrages</p>
+</div>
+</div>
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md">
+<img src="https://readdy.ai/api/search-image?query=childrens%20books%20with%20colorful%20covers%2C%20arranged%20neatly%2C%20bright%20and%20cheerful%2C%20professional%20photography&width=400&height=250&seq=5&orientation=landscape" alt="Jeunesse" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+<div class="p-4 bg-white">
+<h3 class="font-semibold text-gray-900 mb-1">Jeunesse</h3>
+<p class="text-sm text-gray-600">76 ouvrages</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Nouveautés -->
+<section class="py-12 bg-gray-50">
+<div class="container mx-auto px-4">
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-2xl font-bold text-gray-900">Nouveautés</h2>
+<div class="flex space-x-4">
+<button class="px-3 py-1 bg-white rounded-full text-sm border border-gray-200 flex items-center space-x-1 hover:border-gray-300 transition">
+<span>Tous</span>
+</button>
+<button class="px-3 py-1 bg-white rounded-full text-sm border border-gray-200 flex items-center space-x-1 hover:border-gray-300 transition">
+<span>Livres</span>
+</button>
+<button class="px-3 py-1 bg-white rounded-full text-sm border border-gray-200 flex items-center space-x-1 hover:border-gray-300 transition">
+<span>Articles</span>
+</button>
+<button class="px-3 py-1 bg-white rounded-full text-sm border border-gray-200 flex items-center space-x-1 hover:border-gray-300 transition">
+<span>Audio</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<div class="bg-white rounded-lg overflow-hidden shadow-md group">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=modern%20novel%20book%20cover%20with%20blue%20tones%2C%20minimalist%20design%2C%20professional%20photography&width=300&height=400&seq=6&orientation=portrait" alt="L'Écho du Temps" class="w-full h-56 object-cover">
+<div class="absolute top-2 right-2">
+<button class="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md text-gray-500 hover:text-primary transition">
+<i class="ri-bookmark-line"></i>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-semibold text-gray-900">L'Écho du Temps</h3>
+<p class="text-sm text-gray-600">Sophie Marceau</p>
+</div>
+<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">Nouveau</span>
+</div>
+<div class="flex items-center text-sm text-gray-500 mb-3">
+<span class="flex items-center mr-3">
+<i class="ri-book-2-line mr-1"></i> Roman
+</span>
+<span>Juin 2025</span>
+</div>
+<p class="text-sm text-gray-600 mb-4 line-clamp-2">Un voyage extraordinaire à travers les époques, où passé et présent s'entremêlent dans une quête identitaire fascinante.</p>
+<button class="w-full bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Lire maintenant
+</button>
+</div>
+</div>
+<div class="bg-white rounded-lg overflow-hidden shadow-md group">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=science%20book%20cover%20about%20quantum%20physics%2C%20modern%20design%20with%20abstract%20elements%2C%20professional%20photography&width=300&height=400&seq=7&orientation=portrait" alt="Horizons Quantiques" class="w-full h-56 object-cover">
+<div class="absolute top-2 right-2">
+<button class="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md text-gray-500 hover:text-primary transition">
+<i class="ri-bookmark-line"></i>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-semibold text-gray-900">Horizons Quantiques</h3>
+<p class="text-sm text-gray-600">Dr. Antoine Durand</p>
+</div>
+</div>
+<div class="flex items-center text-sm text-gray-500 mb-3">
+<span class="flex items-center mr-3">
+<i class="ri-book-2-line mr-1"></i> Science
+</span>
+<span>Mai 2025</span>
+</div>
+<p class="text-sm text-gray-600 mb-4 line-clamp-2">Une exploration accessible des mystères de la physique quantique et ses implications révolutionnaires pour notre compréhension de l'univers.</p>
+<button class="w-full bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Lire maintenant
+</button>
+</div>
+</div>
+<div class="bg-white rounded-lg overflow-hidden shadow-md group">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=historical%20fiction%20book%20cover%20with%20renaissance%20theme%2C%20elegant%20design%2C%20professional%20photography&width=300&height=400&seq=8&orientation=portrait" alt="Les Secrets de Florence" class="w-full h-56 object-cover">
+<div class="absolute top-2 right-2">
+<button class="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md text-gray-500 hover:text-primary transition">
+<i class="ri-bookmark-line"></i>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-semibold text-gray-900">Les Secrets de Florence</h3>
+<p class="text-sm text-gray-600">Isabelle Laurent</p>
+</div>
+</div>
+<div class="flex items-center text-sm text-gray-500 mb-3">
+<span class="flex items-center mr-3">
+<i class="ri-book-2-line mr-1"></i> Historique
+</span>
+<span>Avril 2025</span>
+</div>
+<p class="text-sm text-gray-600 mb-4 line-clamp-2">Une fresque historique captivante dans l'Italie de la Renaissance, entre intrigues politiques et révolutions artistiques.</p>
+<button class="w-full bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Lire maintenant
+</button>
+</div>
+</div>
+<div class="bg-white rounded-lg overflow-hidden shadow-md group">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=business%20book%20cover%20with%20minimalist%20design%2C%20blue%20and%20gray%20tones%2C%20professional%20photography&width=300&height=400&seq=9&orientation=portrait" alt="Stratégies Innovantes" class="w-full h-56 object-cover">
+<div class="absolute top-2 right-2">
+<button class="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md text-gray-500 hover:text-primary transition">
+<i class="ri-bookmark-line"></i>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-semibold text-gray-900">Stratégies Innovantes</h3>
+<p class="text-sm text-gray-600">Michel Leblanc</p>
+</div>
+</div>
+<div class="flex items-center text-sm text-gray-500 mb-3">
+<span class="flex items-center mr-3">
+<i class="ri-book-2-line mr-1"></i> Business
+</span>
+<span>Mars 2025</span>
+</div>
+<p class="text-sm text-gray-600 mb-4 line-clamp-2">Guide pratique pour développer une culture d'innovation au sein des entreprises face aux défis du monde contemporain.</p>
+<button class="w-full bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Lire maintenant
+</button>
+</div>
+</div>
+</div>
+<div class="mt-8 text-center">
+<button class="px-6 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-50 transition whitespace-nowrap">
+Voir plus
+</button>
+</div>
+</div>
+</section>
+<!-- Espace Personnel -->
+<section class="py-12 bg-white">
+<div class="container mx-auto px-4">
+<h2 class="text-2xl font-bold text-gray-900 mb-8">Votre Espace Personnel</h2>
+<div class="bg-blue-50 rounded-xl p-6 mb-10">
+<div class="text-center max-w-2xl mx-auto">
+<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-user-line ri-xl text-primary"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-2">Créez votre espace personnalisé</h3>
+<p class="text-gray-600 mb-6">Connectez-vous pour accéder à votre bibliothèque personnelle, sauvegarder vos favoris et suivre votre progression de lecture</p>
+<div class="flex flex-col sm:flex-row gap-3 justify-center">
+<button class="bg-primary text-white px-6 py-3 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+S'inscrire gratuitement
+</button>
+<button class="bg-white text-primary border border-primary px-6 py-3 rounded-button hover:bg-gray-50 transition whitespace-nowrap">
+Se connecter
+</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-gray-50 rounded-lg p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-semibold text-gray-900">Lectures en cours</h3>
+<span class="text-sm text-primary">Tout voir</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-start space-x-3">
+<img src="https://readdy.ai/api/search-image?query=book%20cover%20with%20blue%20tones%2C%20minimalist%20design%2C%20professional%20photography&width=80&height=120&seq=10&orientation=portrait" alt="Livre" class="w-12 h-16 object-cover rounded">
+<div class="flex-1">
+<h4 class="text-sm font-medium text-gray-900 mb-1">L'Art de la Simplicité</h4>
+<p class="text-xs text-gray-500 mb-2">Dominique Loreau</p>
+<div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 65%"></div>
+</div>
+<p class="text-xs text-gray-500 mt-1">65% terminé</p>
+</div>
+</div>
+<div class="flex items-start space-x-3">
+<img src="https://readdy.ai/api/search-image?query=science%20fiction%20book%20cover%20with%20futuristic%20design%2C%20professional%20photography&width=80&height=120&seq=11&orientation=portrait" alt="Livre" class="w-12 h-16 object-cover rounded">
+<div class="flex-1">
+<h4 class="text-sm font-medium text-gray-900 mb-1">Chroniques Martiennes</h4>
+<p class="text-xs text-gray-500 mb-2">Ray Bradbury</p>
+<div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 30%"></div>
+</div>
+<p class="text-xs text-gray-500 mt-1">30% terminé</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 rounded-lg p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-semibold text-gray-900">Collections sauvegardées</h3>
+<span class="text-sm text-primary">Tout voir</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-white rounded-lg">
+<div class="flex items-center">
+<div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-3">
+<i class="ri-book-line"></i>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-900">Mes favoris</h4>
+<p class="text-xs text-gray-500">12 ouvrages</p>
+</div>
+</div>
+<i class="ri-arrow-right-s-line text-gray-400"></i>
+</div>
+<div class="flex items-center justify-between p-3 bg-white rounded-lg">
+<div class="flex items-center">
+<div class="w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-full mr-3">
+<i class="ri-article-line"></i>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-900">Articles scientifiques</h4>
+<p class="text-xs text-gray-500">8 ouvrages</p>
+</div>
+</div>
+<i class="ri-arrow-right-s-line text-gray-400"></i>
+</div>
+<div class="flex items-center justify-between p-3 bg-white rounded-lg">
+<div class="flex items-center">
+<div class="w-8 h-8 flex items-center justify-center bg-orange-100 text-orange-600 rounded-full mr-3">
+<i class="ri-headphone-line"></i>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-900">Audiobooks</h4>
+<p class="text-xs text-gray-500">5 ouvrages</p>
+</div>
+</div>
+<i class="ri-arrow-right-s-line text-gray-400"></i>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 rounded-lg p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-semibold text-gray-900">Recommandations</h3>
+<span class="text-sm text-primary">Tout voir</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-start space-x-3">
+<img src="https://readdy.ai/api/search-image?query=psychology%20book%20cover%20with%20minimalist%20design%2C%20professional%20photography&width=80&height=120&seq=12&orientation=portrait" alt="Livre" class="w-12 h-16 object-cover rounded">
+<div>
+<h4 class="text-sm font-medium text-gray-900 mb-1">L'Intelligence Émotionnelle</h4>
+<p class="text-xs text-gray-500 mb-1">Daniel Goleman</p>
+<div class="flex items-center">
+<div class="flex text-yellow-400 text-xs">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-half-fill"></i>
+</div>
+<span class="text-xs text-gray-500 ml-1">(128)</span>
+</div>
+</div>
+</div>
+<div class="flex items-start space-x-3">
+<img src="https://readdy.ai/api/search-image?query=philosophy%20book%20cover%20with%20abstract%20design%2C%20professional%20photography&width=80&height=120&seq=13&orientation=portrait" alt="Livre" class="w-12 h-16 object-cover rounded">
+<div>
+<h4 class="text-sm font-medium text-gray-900 mb-1">Méditations</h4>
+<p class="text-xs text-gray-500 mb-1">Marc Aurèle</p>
+<div class="flex items-center">
+<div class="flex text-yellow-400 text-xs">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-line"></i>
+</div>
+<span class="text-xs text-gray-500 ml-1">(95)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Fonctionnalités -->
+<section class="py-12 bg-gray-50">
+<div class="container mx-auto px-4">
+<div class="text-center max-w-3xl mx-auto mb-12">
+<h2 class="text-2xl font-bold text-gray-900 mb-4">Une expérience de lecture optimale</h2>
+<p class="text-gray-600">Notre bibliothèque numérique offre des fonctionnalités avancées pour une expérience de lecture personnalisée et intuitive</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-white p-6 rounded-lg shadow-sm text-center">
+<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-device-line ri-xl text-primary"></i>
+</div>
+<h3 class="font-semibold text-gray-900 mb-2">Multi-appareils</h3>
+<p class="text-gray-600 text-sm">Accédez à votre bibliothèque depuis n'importe quel appareil et synchronisez automatiquement votre progression</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center">
+<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-search-eye-line ri-xl text-primary"></i>
+</div>
+<h3 class="font-semibold text-gray-900 mb-2">Recherche avancée</h3>
+<p class="text-gray-600 text-sm">Trouvez rapidement les ouvrages qui vous intéressent grâce à notre système de recherche intelligent</p>
+</div>
+<div class="bg-white p-6 rounded-lg shadow-sm text-center">
+<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-bookmark-3-line ri-xl text-primary"></i>
+</div>
+<h3 class="font-semibold text-gray-900 mb-2">Organisation personnalisée</h3>
+<p class="text-gray-600 text-sm">Créez vos propres collections et organisez vos lectures selon vos préférences</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter -->
+<section class="py-12 bg-primary bg-opacity-5">
+<div class="container mx-auto px-4">
+<div class="max-w-2xl mx-auto text-center">
+<h2 class="text-2xl font-bold text-gray-900 mb-3">Restez informé</h2>
+<p class="text-gray-600 mb-6">Inscrivez-vous à notre newsletter pour recevoir les dernières nouveautés et recommandations personnalisées</p>
+<div class="flex flex-col sm:flex-row gap-3">
+<input type="email" placeholder="Votre adresse email" class="flex-grow px-4 py-3 rounded-button border-none shadow-sm focus:ring-2 focus:ring-primary focus:ring-opacity-50">
+<button class="bg-primary text-white px-6 py-3 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+S'abonner
+</button>
+</div>
+<p class="text-xs text-gray-500 mt-3">En vous inscrivant, vous acceptez notre politique de confidentialité</p>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-gray-900 text-white pt-12 pb-6">
+<div class="container mx-auto px-4">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+<div>
+<a href="#" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">hayar library</a>
+<p class="text-gray-400 text-sm mb-4">Votre bibliothèque numérique personnelle, accessible partout et à tout moment.</p>
+<div class="flex space-x-4">
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition">
+<i class="ri-facebook-fill"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition">
+<i class="ri-twitter-fill"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition">
+<i class="ri-instagram-fill"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition">
+<i class="ri-linkedin-fill"></i>
+</a>
+</div>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Explorer</h3>
+<ul class="space-y-2 text-gray-400">
+<li><a href="#" class="hover:text-white transition">Collections</a></li>
+<li><a href="#" class="hover:text-white transition">Nouveautés</a></li>
+<li><a href="#" class="hover:text-white transition">Populaires</a></li>
+<li><a href="#" class="hover:text-white transition">Auteurs</a></li>
+<li><a href="#" class="hover:text-white transition">Sujets</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Aide</h3>
+<ul class="space-y-2 text-gray-400">
+<li><a href="#" class="hover:text-white transition">FAQ</a></li>
+<li><a href="#" class="hover:text-white transition">Support technique</a></li>
+<li><a href="#" class="hover:text-white transition">Guide d'utilisation</a></li>
+<li><a href="#" class="hover:text-white transition">Conditions d'utilisation</a></li>
+<li><a href="#" class="hover:text-white transition">Politique de confidentialité</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Contact</h3>
+<ul class="space-y-2 text-gray-400">
+<li class="flex items-start">
+<i class="ri-map-pin-line mr-2 mt-1"></i>
+<span>Avenue charles de gaules<br>N'djamena, Tchad</span>
+</li>
+<li class="flex items-center">
+<i class="ri-mail-line mr-2"></i>
+<span>hayar.library@gmail.com</span>
+</li>
+<li class="flex items-center">
+<i class="ri-phone-line mr-2"></i>
+<span>69010880</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="pt-6 border-t border-gray-800 text-sm text-gray-400 flex flex-col md:flex-row justify-between items-center">
+<p>© 2025 Bibliothèque Numérique. Tous droits réservés.</p>
+<div class="flex space-x-4 mt-4 md:mt-0">
+<a href="#" class="hover:text-white transition">Mentions légales</a>
+<a href="#" class="hover:text-white transition">Cookies</a>
+<a href="#" class="hover:text-white transition">Accessibilité</a>
+</div>
+</div>
+</div>
+</footer>
+<script id="searchScript">
+document.addEventListener('DOMContentLoaded', function() {
+const searchInputs = document.querySelectorAll('.search-input');
+searchInputs.forEach(input => {
+input.addEventListener('focus', function() {
+this.parentElement.classList.add('ring-2', 'ring-primary', 'ring-opacity-50');
+});
+input.addEventListener('blur', function() {
+this.parentElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50');
+});
+});
+});
+</script>
+<script id="checkboxScript">
+document.addEventListener('DOMContentLoaded', function() {
+const checkboxes = document.querySelectorAll('.custom-checkbox input');
+checkboxes.forEach(checkbox => {
+checkbox.addEventListener('change', function() {
+const checkmark = this.nextElementSibling;
+if (this.checked) {
+checkmark.classList.add('bg-primary', 'border-primary');
+} else {
+checkmark.classList.remove('bg-primary', 'border-primary');
+}
+});
+});
+});
+</script>
+<script id="switchScript">
+document.addEventListener('DOMContentLoaded', function() {
+const switches = document.querySelectorAll('.custom-switch input');
+switches.forEach(switchInput => {
+switchInput.addEventListener('change', function() {
+const slider = this.nextElementSibling;
+if (this.checked) {
+slider.classList.add('bg-primary');
+slider.classList.remove('bg-gray-300');
+} else {
+slider.classList.remove('bg-primary');
+slider.classList.add('bg-gray-300');
+}
+});
+});
+});
+</script>
+<script id="mobileMenuScript">
+document.addEventListener('DOMContentLoaded', function() {
+const menuButton = document.querySelector('.md\\:hidden');
+if (menuButton) {
+menuButton.addEventListener('click', function() {
+// Mobile menu functionality would be implemented here
+console.log('Mobile menu clicked');
+});
+}
+});
+</script>
+<script id="homeLinkScript">
+document.addEventListener('DOMContentLoaded', function() {
+const homeLink = document.getElementById('homeLink');
+if (homeLink) {
+homeLink.addEventListener('click', function(e) {
+if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+e.preventDefault();
+homeLink.style.transform = 'scale(0.95)';
+homeLink.style.color = '#3b82f6';
+setTimeout(() => {
+homeLink.style.transform = 'scale(1)';
+}, 150);
+setTimeout(() => {
+homeLink.style.color = '';
+}, 300);
+} else {
+homeLink.style.transform = 'scale(0.95)';
+setTimeout(() => {
+homeLink.style.transform = 'scale(1)';
+window.location.href = '/';
+}, 150);
+}
+});
+}
+});
+</script>
+</body>
+</html>

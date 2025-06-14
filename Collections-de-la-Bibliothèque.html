@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collections - Bibliothèque Numérique</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#64748b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Nunito', sans-serif;
+}
+.search-input:focus {
+outline: none;
+box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+.custom-checkbox {
+position: relative;
+display: inline-block;
+width: 18px;
+height: 18px;
+margin-right: 8px;
+}
+.custom-checkbox input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.checkmark {
+position: absolute;
+top: 0;
+left: 0;
+height: 18px;
+width: 18px;
+background-color: #fff;
+border: 1px solid #d1d5db;
+border-radius: 4px;
+transition: all 0.2s ease;
+}
+.custom-checkbox input:checked ~ .checkmark {
+background-color: #3b82f6;
+border-color: #3b82f6;
+}
+.checkmark:after {
+content: "";
+position: absolute;
+display: none;
+}
+.custom-checkbox input:checked ~ .checkmark:after {
+display: block;
+}
+.custom-checkbox .checkmark:after {
+left: 6px;
+top: 2px;
+width: 5px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.filter-chip input:checked + span {
+background-color: #3b82f6;
+color: white;
+border-color: #3b82f6;
+}
+.collection-card:hover .collection-overlay {
+opacity: 1;
+}
+.collection-card:hover .collection-card-content {
+transform: translateY(-5px);
+}
+.collection-card-content {
+transition: transform 0.3s ease;
+}
+.tab-button.active {
+background-color: #3b82f6;
+color: white;
+}
+.category-tab.active {
+color: #3b82f6;
+border-color: #3b82f6;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+input[type=number] {
+-moz-appearance: textfield;
+}
+.create-collection-modal {
+transform: translate(-50%, -50%) scale(0.95);
+opacity: 0;
+visibility: hidden;
+transition: all 0.3s ease;
+}
+.create-collection-modal.active {
+transform: translate(-50%, -50%) scale(1);
+opacity: 1;
+visibility: visible;
+}
+.modal-overlay {
+opacity: 0;
+visibility: hidden;
+transition: all 0.3s ease;
+}
+.modal-overlay.active {
+opacity: 1;
+visibility: visible;
+}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<!-- Header -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+<div class="container mx-auto px-4 py-3 flex items-center justify-between">
+<div class="flex items-center">
+<a href="https://readdy.ai/home/6c536041-3d91-4a62-87cd-38f6e84c393a/e60c0d55-b050-4cc7-a1de-c2ad71cca685" data-readdy="true" class="text-2xl font-['Pacifico'] text-primary mr-8">hayar library</a>
+<nav class="hidden md:flex space-x-6">
+<a href="index.html" data-readdy="true" class="text-gray-600 hover:text-primary transition">Accueil</a>
+<a href="#" class="text-primary font-medium hover:text-primary transition active:scale-95" aria-current="page">Collections</a>
+<!--a href="https://readdy.ai/home/6c536041-3d91-4a62-87cd-38f6e84c393a/39da9461-3516-4556-b101-78433c8d5759" data-readdy="true" class="text-gray-600 hover:text-primary transition">Mon Espace</a>
+<a href="#" class="text-gray-600 hover:text-primary transition">À propos</a-->
+</nav>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative hidden md:block">
+<div class="w-10 h-10 flex items-center justify-center absolute left-0 top-0 text-gray-500">
+<i class="ri-search-line ri-lg"></i>
+</div>
+<input type="text" placeholder="Recherche rapide..." class="search-input pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm w-64 border-none focus:bg-white transition-all duration-200">
+</div>
+<div class="flex items-center space-x-2">
+<button class="bg-white text-primary border border-primary px-4 py-2 rounded-button hover:bg-gray-50 transition whitespace-nowrap">
+Se connecter
+</button>
+<button class="bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+S'inscrire
+</button>
+</div>
+<button class="md:hidden w-10 h-10 flex items-center justify-center text-gray-700">
+<i class="ri-menu-line ri-2x"></i>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Header -->
+<section class="bg-white border-b border-gray-200">
+<div class="container mx-auto px-4 py-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold text-gray-900 mb-2">Collections</h1>
+<p class="text-gray-600">Explorez nos collections thématiques et créez les vôtres</p>
+</div>
+<button id="createCollectionBtn" class="bg-primary text-white px-5 py-3 rounded-button hover:bg-blue-600 transition flex items-center whitespace-nowrap">
+<i class="ri-add-line ri-lg mr-2"></i>
+Créer une collection
+</button>
+</div>
+</div>
+</section>
+<!-- Search and Filters -->
+<section class="py-6 bg-white border-b border-gray-200 sticky top-[61px] z-40 shadow-sm">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row gap-4">
+<div class="relative flex-grow">
+<div class="w-10 h-10 flex items-center justify-center absolute left-0 top-0 text-gray-500">
+<i class="ri-search-line ri-lg"></i>
+</div>
+<input type="text" placeholder="Rechercher dans les collections..." class="search-input w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-gray-800 bg-white">
+</div>
+<div class="flex flex-wrap gap-2 items-center">
+<span class="text-sm font-medium text-gray-700">Filtrer par:</span>
+<label class="filter-chip inline-block">
+<input type="radio" name="filter" value="all" class="hidden" checked>
+<span class="px-3 py-2 rounded-full text-sm border border-gray-200 bg-white cursor-pointer hover:border-gray-300 transition inline-block">
+Tous
+</span>
+</label>
+<label class="filter-chip inline-block">
+<input type="radio" name="filter" value="books" class="hidden">
+<span class="px-3 py-2 rounded-full text-sm border border-gray-200 bg-white cursor-pointer hover:border-gray-300 transition inline-block">
+Livres
+</span>
+</label>
+<label class="filter-chip inline-block">
+<input type="radio" name="filter" value="articles" class="hidden">
+<span class="px-3 py-2 rounded-full text-sm border border-gray-200 bg-white cursor-pointer hover:border-gray-300 transition inline-block">
+Articles
+</span>
+</label>
+<label class="filter-chip inline-block">
+<input type="radio" name="filter" value="audio" class="hidden">
+<span class="px-3 py-2 rounded-full text-sm border border-gray-200 bg-white cursor-pointer hover:border-gray-300 transition inline-block">
+Audio
+</span>
+</label>
+<label class="filter-chip inline-block">
+<input type="radio" name="filter" value="video" class="hidden">
+<span class="px-3 py-2 rounded-full text-sm border border-gray-200 bg-white cursor-pointer hover:border-gray-300 transition inline-block">
+Vidéo
+</span>
+</label>
+</div>
+<div class="relative">
+<button class="flex items-center space-x-2 px-4 py-3 border border-gray-200 rounded-lg text-gray-700 bg-white">
+<span>Trier par</span>
+<i class="ri-arrow-down-s-line"></i>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Category Tabs -->
+<section class="py-6 bg-gray-50">
+<div class="container mx-auto px-4">
+<div class="flex overflow-x-auto pb-2 scrollbar-hide gap-2">
+<button class="category-tab active whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary">
+Toutes les catégories
+</button>
+<button class="category-tab whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 transition">
+Littérature
+</button>
+<button class="category-tab whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 transition">
+Sciences
+</button>
+<button class="category-tab whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 transition">
+Arts
+</button>
+<button class="category-tab whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 transition">
+Histoire
+</button>
+<button class="category-tab whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 transition">
+Philosophie
+</button>
+<button class="category-tab whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 transition">
+Économie
+</button>
+<button class="category-tab whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 transition">
+Jeunesse
+</button>
+</div>
+</div>
+</section>
+<!-- Collections Grid -->
+<section class="py-8 bg-gray-50">
+<div class="container mx-auto px-4">
+<!-- Collections publiques -->
+<div class="mb-12">
+<h2 class="text-2xl font-bold text-gray-900 mb-6">Collections publiques</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Collection 1 -->
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md bg-white">
+<div class="relative h-48">
+<img src="https://readdy.ai/api/search-image?query=stack%2520of%2520classic%2520literature%2520books%2520with%2520elegant%2520covers%252C%2520arranged%2520on%2520wooden%2520surface%252C%2520soft%2520lighting%252C%2520professional%2520photography%252C%2520high%2520quality%2520image%2520with%2520blue%2520tones&width=400&height=250&seq=101&orientation=landscape" alt="Littérature Classique" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+</div>
+<div class="p-4 collection-card-content">
+<span class="inline-block px-2 py-1 bg-blue-100 text-primary text-xs rounded-full mb-2">Populaire</span>
+<h3 class="font-semibold text-gray-900 mb-1">Littérature Classique</h3>
+<p class="text-sm text-gray-600 mb-2">Les grands classiques de la littérature mondiale</p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gray-500">125 ouvrages</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-xs text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-green-100 flex items-center justify-center text-xs text-green-600">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-600">
++3
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Collection 2 -->
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md bg-white">
+<div class="relative h-48">
+<img src="https://readdy.ai/api/search-image?query=modern%2520science%2520books%2520and%2520digital%2520tablets%252C%2520clean%2520minimalist%2520arrangement%252C%2520soft%2520lighting%252C%2520professional%2520photography%252C%2520blue%2520tones&width=400&height=250&seq=102&orientation=landscape" alt="Sciences & Technologie" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+</div>
+<div class="p-4 collection-card-content">
+<span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full mb-2">Nouveau</span>
+<h3 class="font-semibold text-gray-900 mb-1">Sciences & Technologie</h3>
+<p class="text-sm text-gray-600 mb-2">Découvertes et innovations scientifiques</p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gray-500">87 ouvrages</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-xs text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-600">
++2
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Collection 3 -->
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md bg-white">
+<div class="relative h-48">
+<img src="https://readdy.ai/api/search-image?query=art%2520history%2520books%2520with%2520beautiful%2520covers%252C%2520arranged%2520on%2520wooden%2520surface%252C%2520soft%2520natural%2520lighting%252C%2520professional%2520photography%252C%2520blue%2520tones&width=400&height=250&seq=103&orientation=landscape" alt="Arts & Histoire" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+</div>
+<div class="p-4 collection-card-content">
+<h3 class="font-semibold text-gray-900 mb-1">Arts & Histoire</h3>
+<p class="text-sm text-gray-600 mb-2">L'histoire de l'art à travers les siècles</p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gray-500">94 ouvrages</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-xs text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-purple-100 flex items-center justify-center text-xs text-purple-600">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-600">
++4
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Collection 4 -->
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md bg-white">
+<div class="relative h-48">
+<img src="https://readdy.ai/api/search-image?query=philosophy%2520books%2520with%2520elegant%2520covers%252C%2520arranged%2520on%2520dark%2520wooden%2520desk%252C%2520moody%2520lighting%252C%2520professional%2520photography%252C%2520blue%2520tones&width=400&height=250&seq=104&orientation=landscape" alt="Philosophie" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+</div>
+<div class="p-4 collection-card-content">
+<h3 class="font-semibold text-gray-900 mb-1">Philosophie</h3>
+<p class="text-sm text-gray-600 mb-2">Réflexions sur l'existence et la connaissance</p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gray-500">68 ouvrages</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-xs text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-600">
++1
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Collection 5 -->
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md bg-white">
+<div class="relative h-48">
+<img src="https://readdy.ai/api/search-image?query=childrens%2520books%2520with%2520colorful%2520covers%252C%2520arranged%2520neatly%252C%2520bright%2520and%2520cheerful%252C%2520professional%2520photography%252C%2520blue%2520accents&width=400&height=250&seq=105&orientation=landscape" alt="Jeunesse" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+</div>
+<div class="p-4 collection-card-content">
+<h3 class="font-semibold text-gray-900 mb-1">Jeunesse</h3>
+<p class="text-sm text-gray-600 mb-2">Livres et histoires pour les jeunes lecteurs</p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gray-500">76 ouvrages</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-xs text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-pink-100 flex items-center justify-center text-xs text-pink-600">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-600">
++5
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Collection 6 -->
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md bg-white">
+<div class="relative h-48">
+<img src="https://readdy.ai/api/search-image?query=business%2520and%2520economics%2520books%2520with%2520professional%2520covers%252C%2520arranged%2520on%2520modern%2520desk%252C%2520clean%2520lighting%252C%2520professional%2520photography%252C%2520blue%2520tones&width=400&height=250&seq=106&orientation=landscape" alt="Économie & Business" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+</div>
+<div class="p-4 collection-card-content">
+<span class="inline-block px-2 py-1 bg-blue-100 text-primary text-xs rounded-full mb-2">Populaire</span>
+<h3 class="font-semibold text-gray-900 mb-1">Économie & Business</h3>
+<p class="text-sm text-gray-600 mb-2">Théories économiques et stratégies d'entreprise</p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gray-500">82 ouvrages</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-xs text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-600">
++3
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Collection 7 -->
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md bg-white">
+<div class="relative h-48">
+<img src="https://readdy.ai/api/search-image?query=psychology%2520and%2520self%2520help%2520books%2520with%2520modern%2520covers%252C%2520arranged%2520on%2520light%2520surface%252C%2520bright%2520lighting%252C%2520professional%2520photography%252C%2520blue%2520accents&width=400&height=250&seq=107&orientation=landscape" alt="Psychologie & Développement personnel" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+</div>
+<div class="p-4 collection-card-content">
+<span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full mb-2">Nouveau</span>
+<h3 class="font-semibold text-gray-900 mb-1">Psychologie & Développement</h3>
+<p class="text-sm text-gray-600 mb-2">Comprendre l'esprit et améliorer son bien-être</p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gray-500">59 ouvrages</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-xs text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-orange-100 flex items-center justify-center text-xs text-orange-600">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-600">
++2
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Collection 8 -->
+<div class="collection-card group relative rounded-lg overflow-hidden shadow-md bg-white">
+<div class="relative h-48">
+<img src="https://readdy.ai/api/search-image?query=science%2520fiction%2520and%2520fantasy%2520books%2520with%2520futuristic%2520covers%252C%2520arranged%2520on%2520dark%2520surface%252C%2520dramatic%2520lighting%252C%2520professional%2520photography%252C%2520blue%2520tones&width=400&height=250&seq=108&orientation=landscape" alt="Science-Fiction & Fantaisie" class="w-full h-48 object-cover">
+<div class="collection-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+<div class="p-4 w-full">
+<button class="bg-white text-primary px-4 py-2 rounded-button text-sm w-full hover:bg-gray-100 transition whitespace-nowrap">
+Explorer
+</button>
+</div>
+</div>
+</div>
+<div class="p-4 collection-card-content">
+<h3 class="font-semibold text-gray-900 mb-1">Science-Fiction & Fantaisie</h3>
+<p class="text-sm text-gray-600 mb-2">Mondes imaginaires et futurs alternatifs</p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gray-500">91 ouvrages</span>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-xs text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-indigo-100 flex items-center justify-center text-xs text-indigo-600">
+<i class="ri-user-line"></i>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-600">
++6
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 text-center">
+<button class="px-6 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-50 transition whitespace-nowrap">
+Voir plus de collections
+</button>
+</div>
+</div>
+<!-- Mes Collections -->
+<div class="mb-12">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-bold text-gray-900">Mes Collections</h2>
+<div class="flex space-x-2">
+<button class="flex items-center text-sm text-primary hover:underline">
+<i class="ri-settings-3-line mr-1"></i>
+Gérer mes collections
+</button>
+</div>
+</div>
+<div class="bg-white rounded-lg p-6 mb-6 shadow-sm">
+<div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-6">
+<div class="flex items-center">
+<div class="w-12 h-12 flex items-center justify-center bg-primary rounded-full text-white mr-4">
+<i class="ri-user-line ri-lg"></i>
+</div>
+<div>
+<h3 class="font-semibold text-gray-900">Connectez-vous pour accéder à vos collections</h3>
+<p class="text-sm text-gray-600">Créez et organisez vos propres collections de documents</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="bg-white text-primary border border-primary px-4 py-2 rounded-button hover:bg-gray-50 transition whitespace-nowrap">
+Se connecter
+</button>
+<button class="bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+S'inscrire
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="border border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-center h-48">
+<div class="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full text-primary mb-3">
+<i class="ri-add-line ri-lg"></i>
+</div>
+<h4 class="font-medium text-gray-900 mb-1">Créer une collection</h4>
+<p class="text-sm text-gray-600 mb-3">Organisez vos lectures selon vos thèmes préférés</p>
+<button class="text-primary text-sm hover:underline">Se connecter pour créer</button>
+</div>
+<div class="bg-gray-100 rounded-lg p-4 flex flex-col items-center justify-center text-center h-48">
+<div class="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full text-primary mb-3">
+<i class="ri-bookmark-line ri-lg"></i>
+</div>
+<h4 class="font-medium text-gray-900 mb-1">Favoris</h4>
+<p class="text-sm text-gray-600 mb-3">Accédez rapidement à vos documents préférés</p>
+<button class="text-primary text-sm hover:underline">Se connecter pour voir</button>
+</div>
+<div class="bg-gray-100 rounded-lg p-4 flex flex-col items-center justify-center text-center h-48">
+<div class="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full text-primary mb-3">
+<i class="ri-history-line ri-lg"></i>
+</div>
+<h4 class="font-medium text-gray-900 mb-1">Récemment consultés</h4>
+<p class="text-sm text-gray-600 mb-3">Reprenez vos lectures là où vous les avez laissées</p>
+<button class="text-primary text-sm hover:underline">Se connecter pour voir</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Collections Thématiques -->
+<div>
+<h2 class="text-2xl font-bold text-gray-900 mb-6">Collections Thématiques</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Collection Thématique 1 -->
+<div class="bg-white rounded-lg overflow-hidden shadow-md">
+<div class="flex flex-col md:flex-row">
+<div class="md:w-1/3">
+<img src="https://readdy.ai/api/search-image?query=stack%2520of%2520french%2520literature%2520books%2520with%2520elegant%2520covers%252C%2520soft%2520lighting%252C%2520professional%2520photography%252C%2520blue%2520tones&width=300&height=400&seq=109&orientation=portrait" alt="Littérature Française" class="w-full h-full object-cover">
+</div>
+<div class="md:w-2/3 p-6">
+<div class="flex justify-between items-start mb-3">
+<h3 class="font-semibold text-xl text-gray-900">Littérature Française</h3>
+<span class="inline-block px-2 py-1 bg-blue-100 text-primary text-xs rounded-full">Populaire</span>
+</div>
+<p class="text-gray-600 mb-4">Une sélection des plus grands auteurs français, de Victor Hugo à Annie Ernaux, en passant par Albert Camus et Simone de Beauvoir.</p>
+<div class="flex items-center text-sm text-gray-500 mb-4">
+<span class="flex items-center mr-4">
+<i class="ri-book-2-line mr-1"></i> 78 ouvrages
+</span>
+<span class="flex items-center">
+<i class="ri-user-line mr-1"></i> 1240 lecteurs
+</span>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Explorer la collection
+</button>
+</div>
+</div>
+</div>
+<!-- Collection Thématique 2 -->
+<div class="bg-white rounded-lg overflow-hidden shadow-md">
+<div class="flex flex-col md:flex-row">
+<div class="md:w-1/3">
+<img src="https://readdy.ai/api/search-image?query=stack%2520of%2520modern%2520science%2520books%2520about%2520climate%2520change%252C%2520professional%2520photography%252C%2520clean%2520lighting%252C%2520blue%2520tones&width=300&height=400&seq=110&orientation=portrait" alt="Environnement & Climat" class="w-full h-full object-cover">
+</div>
+<div class="md:w-2/3 p-6">
+<div class="flex justify-between items-start mb-3">
+<h3 class="font-semibold text-xl text-gray-900">Environnement & Climat</h3>
+<span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Nouveau</span>
+</div>
+<p class="text-gray-600 mb-4">Comprendre les enjeux environnementaux actuels à travers une sélection d'ouvrages scientifiques et de témoignages.</p>
+<div class="flex items-center text-sm text-gray-500 mb-4">
+<span class="flex items-center mr-4">
+<i class="ri-book-2-line mr-1"></i> 45 ouvrages
+</span>
+<span class="flex items-center">
+<i class="ri-user-line mr-1"></i> 876 lecteurs
+</span>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Explorer la collection
+</button>
+</div>
+</div>
+</div>
+<!-- Collection Thématique 3 -->
+<div class="bg-white rounded-lg overflow-hidden shadow-md">
+<div class="flex flex-col md:flex-row">
+<div class="md:w-1/3">
+<img src="https://readdy.ai/api/search-image?query=stack%2520of%2520history%2520books%2520about%2520world%2520wars%252C%2520professional%2520photography%252C%2520dramatic%2520lighting%252C%2520blue%2520tones&width=300&height=400&seq=111&orientation=portrait" alt="Guerres Mondiales" class="w-full h-full object-cover">
+</div>
+<div class="md:w-2/3 p-6">
+<div class="flex justify-between items-start mb-3">
+<h3 class="font-semibold text-xl text-gray-900">Guerres Mondiales</h3>
+</div>
+<p class="text-gray-600 mb-4">Une collection d'ouvrages historiques sur les deux conflits majeurs qui ont façonné le XXe siècle et notre monde contemporain.</p>
+<div class="flex items-center text-sm text-gray-500 mb-4">
+<span class="flex items-center mr-4">
+<i class="ri-book-2-line mr-1"></i> 63 ouvrages
+</span>
+<span class="flex items-center">
+<i class="ri-user-line mr-1"></i> 952 lecteurs
+</span>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Explorer la collection
+</button>
+</div>
+</div>
+</div>
+<!-- Collection Thématique 4 -->
+<div class="bg-white rounded-lg overflow-hidden shadow-md">
+<div class="flex flex-col md:flex-row">
+<div class="md:w-1/3">
+<img src="https://readdy.ai/api/search-image?query=stack%2520of%2520cooking%2520and%2520gastronomy%2520books%252C%2520professional%2520photography%252C%2520bright%2520lighting%252C%2520blue%2520accents&width=300&height=400&seq=112&orientation=portrait" alt="Gastronomie & Cuisine" class="w-full h-full object-cover">
+</div>
+<div class="md:w-2/3 p-6">
+<div class="flex justify-between items-start mb-3">
+<h3 class="font-semibold text-xl text-gray-900">Gastronomie & Cuisine</h3>
+</div>
+<p class="text-gray-600 mb-4">Des livres de recettes aux essais sur l'histoire culinaire, découvrez l'art de la gastronomie à travers le monde.</p>
+<div class="flex items-center text-sm text-gray-500 mb-4">
+<span class="flex items-center mr-4">
+<i class="ri-book-2-line mr-1"></i> 52 ouvrages
+</span>
+<span class="flex items-center">
+<i class="ri-user-line mr-1"></i> 1105 lecteurs
+</span>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Explorer la collection
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Create Collection Modal -->
+<div id="modalOverlay" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+<div id="createCollectionModal" class="create-collection-modal fixed top-1/2 left-1/2 bg-white rounded-lg shadow-xl w-full max-w-md p-6 z-50">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xl font-bold text-gray-900">Créer une nouvelle collection</h3>
+<button id="closeModalBtn" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<form>
+<div class="mb-4">
+<label for="collectionName" class="block text-sm font-medium text-gray-700 mb-1">Nom de la collection</label>
+<input type="text" id="collectionName" placeholder="Ex: Mes livres de science-fiction" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary">
+</div>
+<div class="mb-4">
+<label for="collectionCategory" class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+<div class="relative">
+<select id="collectionCategory" class="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none pr-8 focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary">
+<option value="" disabled selected>Sélectionnez une catégorie</option>
+<option value="literature">Littérature</option>
+<option value="science">Sciences</option>
+<option value="arts">Arts</option>
+<option value="history">Histoire</option>
+<option value="philosophy">Philosophie</option>
+<option value="economics">Économie</option>
+<option value="youth">Jeunesse</option>
+<option value="other">Autre</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="collectionDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+<textarea id="collectionDescription" rows="3" placeholder="Décrivez votre collection en quelques mots..." class="w-full px-4 py-2 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"></textarea>
+</div>
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-1">Confidentialité</label>
+<div class="flex items-center space-x-4">
+<label class="flex items-center">
+<input type="radio" name="privacy" value="public" class="hidden" checked>
+<span class="w-4 h-4 border border-gray-300 rounded-full flex items-center justify-center mr-2">
+<span class="w-2 h-2 rounded-full bg-primary hidden"></span>
+</span>
+<span class="text-sm text-gray-700">Publique</span>
+</label>
+<label class="flex items-center">
+<input type="radio" name="privacy" value="private" class="hidden">
+<span class="w-4 h-4 border border-gray-300 rounded-full flex items-center justify-center mr-2">
+<span class="w-2 h-2 rounded-full bg-primary hidden"></span>
+</span>
+<span class="text-sm text-gray-700">Privée</span>
+</label>
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 mb-1">Image de couverture</label>
+<div class="border border-dashed border-gray-300 rounded-lg p-4 text-center">
+<div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mx-auto mb-2 text-gray-500">
+<i class="ri-image-add-line ri-lg"></i>
+</div>
+<p class="text-sm text-gray-600 mb-2">Glissez-déposez une image ou</p>
+<button type="button" class="text-primary text-sm hover:underline">Parcourir</button>
+<input type="file" class="hidden" accept="image/*">
+</div>
+</div>
+<div class="flex justify-end space-x-3">
+<button type="button" id="cancelModalBtn" class="px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-50 transition whitespace-nowrap">
+Annuler
+</button>
+<button type="submit" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition whitespace-nowrap">
+Créer la collection
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-gray-900 text-white pt-12 pb-6">
+<div class="container mx-auto px-4">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+<div>
+<a href="https://readdy.ai/home/6c536041-3d91-4a62-87cd-38f6e84c393a/e60c0d55-b050-4cc7-a1de-c2ad71cca685" data-readdy="true" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">hayar library</a>
+<p class="text-gray-400 text-sm mb-4">Votre bibliothèque numérique personnelle, accessible partout et à tout moment.</p>
+<div class="flex space-x-4">
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition">
+<i class="ri-facebook-fill"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition">
+<i class="ri-twitter-fill"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition">
+<i class="ri-instagram-fill"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 transition">
+<i class="ri-linkedin-fill"></i>
+</a>
+</div>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Explorer</h3>
+<ul class="space-y-2 text-gray-400">
+<li><a href="#" class="hover:text-white transition">Collections</a></li>
+<li><a href="#" class="hover:text-white transition">Nouveautés</a></li>
+<li><a href="#" class="hover:text-white transition">Populaires</a></li>
+<li><a href="#" class="hover:text-white transition">Auteurs</a></li>
+<li><a href="#" class="hover:text-white transition">Sujets</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Aide</h3>
+<ul class="space-y-2 text-gray-400">
+<li><a href="#" class="hover:text-white transition">FAQ</a></li>
+<li><a href="#" class="hover:text-white transition">Support technique</a></li>
+<li><a href="#" class="hover:text-white transition">Guide d'utilisation</a></li>
+<li><a href="#" class="hover:text-white transition">Conditions d'utilisation</a></li>
+<li><a href="#" class="hover:text-white transition">Politique de confidentialité</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4">Contact</h3>
+<ul class="space-y-2 text-gray-400">
+<li class="flex items-start">
+<i class="ri-map-pin-line mr-2 mt-1"></i>
+<span>avenue charles de gaules<br>n'djamena, Tchad</span>
+</li>
+<li class="flex items-center">
+<i class="ri-mail-line mr-2"></i>
+<span>hayar.library@gmail.com</span>
+</li>
+<li class="flex items-center">
+<i class="ri-phone-line mr-2"></i>
+<span>+235 69010880</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="pt-6 border-t border-gray-800 text-sm text-gray-400 flex flex-col md:flex-row justify-between items-center">
+<p>© 2025 Bibliothèque Numérique. Tous droits réservés.</p>
+<div class="flex space-x-4 mt-4 md:mt-0">
+<a href="#" class="hover:text-white transition">Mentions légales</a>
+<a href="#" class="hover:text-white transition">Cookies</a>
+<a href="#" class="hover:text-white transition">Accessibilité</a>
+</div>
+</div>
+</div>
+</footer>
+<script id="filterChipScript">
+document.addEventListener('DOMContentLoaded', function() {
+const filterChips = document.querySelectorAll('.filter-chip input');
+filterChips.forEach(chip => {
+chip.addEventListener('change', function() {
+const allChips = document.querySelectorAll('.filter-chip input');
+allChips.forEach(c => {
+const span = c.nextElementSibling;
+if (c.checked) {
+span.classList.add('bg-primary', 'text-white', 'border-primary');
+span.classList.remove('bg-white', 'border-gray-200');
+} else {
+span.classList.remove('bg-primary', 'text-white', 'border-primary');
+span.classList.add('bg-white', 'border-gray-200');
+}
+});
+});
+});
+});
+</script>
+<script id="categoryTabScript">
+document.addEventListener('DOMContentLoaded', function() {
+const categoryTabs = document.querySelectorAll('.category-tab');
+categoryTabs.forEach(tab => {
+tab.addEventListener('click', function() {
+categoryTabs.forEach(t => {
+t.classList.remove('active', 'border-primary', 'text-primary');
+t.classList.add('border-transparent', 'text-gray-600');
+});
+this.classList.add('active', 'border-primary', 'text-primary');
+this.classList.remove('border-transparent', 'text-gray-600');
+});
+});
+});
+</script>
+<script id="modalScript">
+document.addEventListener('DOMContentLoaded', function() {
+const createBtn = document.getElementById('createCollectionBtn');
+const closeBtn = document.getElementById('closeModalBtn');
+const cancelBtn = document.getElementById('cancelModalBtn');
+const modal = document.getElementById('createCollectionModal');
+const overlay = document.getElementById('modalOverlay');
+function openModal() {
+modal.classList.add('active');
+overlay.classList.add('active');
+document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+modal.classList.remove('active');
+overlay.classList.remove('active');
+document.body.style.overflow = '';
+}
+createBtn.addEventListener('click', openModal);
+closeBtn.addEventListener('click', closeModal);
+cancelBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', function(e) {
+if (e.target === overlay) {
+closeModal();
+}
+});
+// Initialize modal as hidden
+closeModal();
+// Radio button custom styling
+const radioButtons = document.querySelectorAll('input[type="radio"][name="privacy"]');
+radioButtons.forEach(radio => {
+radio.addEventListener('change', function() {
+radioButtons.forEach(r => {
+const indicator = r.nextElementSibling.querySelector('span');
+if (r.checked) {
+indicator.classList.remove('hidden');
+} else {
+indicator.classList.add('hidden');
+}
+});
+});
+// Initialize state
+if (radio.checked) {
+radio.nextElementSibling.querySelector('span').classList.remove('hidden');
+}
+});
+});
+</script>
+<script id="searchScript">
+document.addEventListener('DOMContentLoaded', function() {
+const searchInputs = document.querySelectorAll('.search-input');
+searchInputs.forEach(input => {
+input.addEventListener('focus', function() {
+this.parentElement.classList.add('ring-2', 'ring-primary', 'ring-opacity-50');
+});
+input.addEventListener('blur', function() {
+this.parentElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50');
+});
+});
+});
+</script>
+</body>
+</html>
